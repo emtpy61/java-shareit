@@ -1,12 +1,61 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.service.ItemService;
 
-/**
- * TODO Sprint add-controllers.
- */
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 @RestController
 @RequestMapping("/items")
+@RequiredArgsConstructor
+@Slf4j
+@Validated
 public class ItemController {
+
+    private final ItemService itemService;
+
+    @PostMapping
+    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Integer ownerId,
+            @NotNull @RequestBody @Valid ItemDto itemDto) {
+        log.info("POST запрос на создание item: {}", itemDto);
+        return itemService.createItem(ownerId, itemDto);
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemDto getItemById(@PathVariable Integer itemId) {
+        log.info("GET запрос на получение item с id: {}", itemId);
+        return itemService.getItemById(itemId);
+    }
+
+    @GetMapping
+    public List<ItemDto> getItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+        log.info("GET запрос на получение item с id пользователя: {}", ownerId);
+        return itemService.getItemsByOwnerId(ownerId);
+    }
+
+    @PatchMapping("/{itemId}")
+    public ItemDto updateItem(@PathVariable Integer itemId,
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId,
+            @RequestBody ItemDto itemDto) {
+        log.info("PATCH запрос на изменение item с id: {}", itemId);
+        return itemService.updateItem(itemId, ownerId, itemDto);
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> searchItems(@RequestParam String text) {
+        log.info("GET запрос на поиск по тексту: {}", text);
+        return itemService.searchItems(text.toLowerCase());
+    }
+
+    @DeleteMapping("/{itemId}")
+    public void deleteItem(@PathVariable Integer itemId) {
+        log.info("DELETE запрос на удаление item с id: {}", itemId);
+        itemService.deleteItem(itemId);
+    }
 }

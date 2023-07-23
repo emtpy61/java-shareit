@@ -8,10 +8,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -23,16 +22,19 @@ import static ru.practicum.shareit.common.ecxeption.NotFoundException.notFoundEx
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public ItemDto createItem(Integer ownerId, ItemDto itemDto) {
-        Item item = ItemMapper.fromItemDto(itemDto)
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(notFoundException("Пользователь с id = {0} не найден.", ownerId));
+        Item item = ItemMapper.fromItemDto(itemDto, user)
                 .toBuilder()
-                .owner(UserMapper.fromUserDto(userService.getUserById(ownerId)))
+                .owner(user)
                 .build();
         item = itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        itemDto.setId(item.getId());
+        return itemDto;
     }
 
     @Override
@@ -74,13 +76,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItems(String text) {
-        if (text.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return itemRepository.findAll().stream()
-                .filter(item -> item.getName().toLowerCase().contains(text) ||
-                        item.getDescription().toLowerCase().contains(text))
-                .filter(Item::getAvailable)
+        return itemRepository.searchItems(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

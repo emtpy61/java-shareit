@@ -38,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
     private ItemMapper itemMapper;
     private CommentMapper commentMapper;
 
+
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public ItemDto createItem(Long ownerId, ItemDto itemDto) {

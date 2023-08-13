@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.common.ecxeption.AccessDenyException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -37,7 +36,6 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private ItemMapper itemMapper;
     private CommentMapper commentMapper;
-
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override

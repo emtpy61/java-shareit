@@ -174,7 +174,6 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);
         }
-
         return bookingMapper.bookingsToBookingDtos(bookings);
     }
 

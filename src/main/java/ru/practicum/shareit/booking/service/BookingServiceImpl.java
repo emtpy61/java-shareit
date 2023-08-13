@@ -106,32 +106,27 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
                                 .and(booking.start.before(LocalDateTime.now()))
-                                .and(booking.end.after(LocalDateTime.now()))
-                        , sort);
+                                .and(booking.end.after(LocalDateTime.now())), sort);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.end.before(LocalDateTime.now()))
-                        , sort);
+                                .and(booking.end.before(LocalDateTime.now())), sort);
                 break;
             case "FUTURE":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.start.after(LocalDateTime.now()))
-                        , sort);
+                                .and(booking.start.after(LocalDateTime.now())), sort);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.WAITING))
-                        , sort);
+                                .and(booking.status.eq(BookingStatus.WAITING)), sort);
                 break;
             case "REJECTED":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.REJECTED))
-                        , sort);
+                                .and(booking.status.eq(BookingStatus.REJECTED)), sort);
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);
@@ -154,32 +149,27 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
                                 .and(booking.start.before(LocalDateTime.now()))
-                                .and(booking.end.after(LocalDateTime.now()))
-                        , sort);
+                                .and(booking.end.after(LocalDateTime.now())), sort);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.end.before(LocalDateTime.now()))
-                        , sort);
+                                .and(booking.end.before(LocalDateTime.now())), sort);
                 break;
             case "FUTURE":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.start.after(LocalDateTime.now()))
-                        , sort);
+                                .and(booking.start.after(LocalDateTime.now())), sort);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.WAITING))
-                        , sort);
+                                .and(booking.status.eq(BookingStatus.WAITING)), sort);
                 break;
             case "REJECTED":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.REJECTED))
-                        , sort);
+                                .and(booking.status.eq(BookingStatus.REJECTED)), sort);
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);

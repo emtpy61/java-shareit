@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.common.ecxeption.AccessDenyException;
 import ru.practicum.shareit.common.ecxeption.ErrorMessage;
+import ru.practicum.shareit.common.ecxeption.ItemNotAvailbaleException;
 import ru.practicum.shareit.common.ecxeption.NotFoundException;
 
 import java.util.Objects;
@@ -26,6 +27,20 @@ public class ErrorHandler {
     @ExceptionHandler({AccessDenyException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorMessage handleAccessDenyException(final Exception e) {
+        log.error(e.getMessage());
+        return new ErrorMessage(e.getMessage());
+    }
+
+    @ExceptionHandler({ItemNotAvailbaleException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleItemNotAvailbaleException(final Exception e) {
+        log.error(e.getMessage());
+        return new ErrorMessage(e.getMessage());
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleIllegalArgumentException(final Exception e) {
         log.error(e.getMessage());
         return new ErrorMessage(e.getMessage());
     }

@@ -1,15 +1,26 @@
 package ru.practicum.shareit.user.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
-import ru.practicum.shareit.common.repository.GenericEntity;
+import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = true)
-@SuperBuilder(toBuilder = true)
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+@Entity
 @Data
-public class User extends GenericEntity {
+@Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @NotNull
     private String name;
+    @NotNull
+    @Column(unique = true)
     private String email;
 }

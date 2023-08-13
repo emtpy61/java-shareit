@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.model;
+package ru.practicum.shareit.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,15 +10,17 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "requests")
+@Table(name = "comments")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemRequest {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String description;
+    private String text;
     @ManyToOne(fetch = FetchType.LAZY)
-    private User requester;
-    private LocalDateTime created = LocalDateTime.now();
+    private Item item;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User author;
+    private LocalDateTime created;
 }

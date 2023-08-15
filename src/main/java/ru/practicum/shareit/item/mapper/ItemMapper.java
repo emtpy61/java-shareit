@@ -3,8 +3,6 @@ package ru.practicum.shareit.item.mapper;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
@@ -52,7 +50,7 @@ public interface ItemMapper {
     }
 
     default ItemRequest mapRequest(Long id) {
-        if(id == null) {
+        if (id == null) {
             return null;
         }
         ItemRequest request = new ItemRequest();

@@ -3,11 +3,14 @@ package ru.practicum.shareit.item.mapper;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -28,7 +31,7 @@ public interface ItemMapper {
 
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "bookings", ignore = true)
-    @Mapping(target = "request.id", source = "requestId")
+    @Mapping(target = "request", source = "requestId")
     @Mapping(target = "owner.id", source = "ownerId")
     Item itemDtotoItem(ItemDto itemDto);
 
@@ -46,6 +49,15 @@ public interface ItemMapper {
                 .filter(booking -> booking.getStatus().equals(BookingStatus.APPROVED))
                 .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                 .max(Comparator.comparing(Booking::getStart)).orElse(null);
+    }
+
+    default ItemRequest mapRequest(Long id) {
+        if(id == null) {
+            return null;
+        }
+        ItemRequest request = new ItemRequest();
+        request.setId(id);
+        return request;
     }
 
     default Booking getNextBooking(Item item, Long userId) {

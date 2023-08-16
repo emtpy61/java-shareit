@@ -34,8 +34,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private ItemMapper itemMapper;
-    private CommentMapper commentMapper;
+    private final ItemMapper itemMapper;
+    private final CommentMapper commentMapper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override

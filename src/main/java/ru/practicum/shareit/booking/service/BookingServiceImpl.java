@@ -36,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private BookingMapper bookingMapper;
+    private final BookingMapper bookingMapper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override

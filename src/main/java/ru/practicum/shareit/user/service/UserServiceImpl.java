@@ -20,7 +20,7 @@ import static ru.practicum.shareit.common.ecxeption.NotFoundException.notFoundEx
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @Transactional
     @Override

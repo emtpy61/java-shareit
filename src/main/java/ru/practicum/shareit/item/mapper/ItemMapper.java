@@ -31,7 +31,7 @@ public interface ItemMapper {
     @Mapping(target = "bookings", ignore = true)
     @Mapping(target = "request", source = "requestId")
     @Mapping(target = "owner.id", source = "ownerId")
-    Item itemDtotoItem(ItemDto itemDto);
+    Item itemDtoToItem(ItemDto itemDto);
 
 
     List<ItemDto> itemsToItemDtos(List<Item> items, @Context Long userId);

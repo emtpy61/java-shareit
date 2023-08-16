@@ -43,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
         getUser(ownerId);
         itemDto.setOwnerId(ownerId);
         itemDto.setId(
-                itemRepository.save(itemMapper.itemDtotoItem(itemDto))
+                itemRepository.save(itemMapper.itemDtoToItem(itemDto))
                         .getId());
         return itemDto;
     }
@@ -69,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
             String message = String.format("Вещь %s не принадлежит полюзователю %s", itemId, userId);
             throw new AccessDenyException(message);
         }
-        itemRepository.updateItemFields(itemMapper.itemDtotoItem(itemDto), userId, itemId);
+        itemRepository.updateItemFields(itemMapper.itemDtoToItem(itemDto), userId, itemId);
         return getItemById(itemId, userId);
     }
 

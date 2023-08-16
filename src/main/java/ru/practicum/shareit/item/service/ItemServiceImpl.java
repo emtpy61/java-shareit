@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.common.ecxeption.AccessDenyException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -34,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final BookingRepository bookingRepository;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
 
@@ -92,13 +94,14 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(CreateCommentDto createCommentDto, Long userId, Long itemId) {
         User user = getUser(userId);
         Item item = getItem(itemId);
-        item.getBookings().stream()
-                .filter(booking -> booking.getBooker().equals(user))
-                .filter(booking -> booking.getStatus().equals(BookingStatus.APPROVED))
-                .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
-                .findAny()
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Нельзя добавить комментарий. Пользователь не арендовал вещь."));
+        if (!bookingRepository.hasCompletedBookingsForItem(
+                user,
+                item,
+                BookingStatus.APPROVED,
+                LocalDateTime.now())) {
+            throw new IllegalArgumentException("Нельзя добавить комментарий. Пользователь не арендовал вещь.");
+        }
+
         Comment comment = commentMapper.createCommentDtotoComment(createCommentDto);
         comment.setAuthor(user);
         comment.setCreated(LocalDateTime.now());

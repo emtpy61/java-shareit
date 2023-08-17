@@ -1,6 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -8,10 +8,10 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@AllArgsConstructor
 public class ItemRequestDto {
 
-    private Integer id;
+    private Long id;
     @NotNull
     @NotBlank
     private String description;

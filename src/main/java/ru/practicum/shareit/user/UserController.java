@@ -24,32 +24,32 @@ public class UserController {
 
     @PostMapping
     public UserDto createUser(@NotNull @RequestBody @Valid UserDto userDto) {
-        log.info("POST запрос на создание user: {}", userDto);
+        log.info(">>>POST запрос на создание user: {}", userDto);
         return userService.createUser(userDto);
     }
 
     @GetMapping("/{userId}")
     public UserDto getUserById(@PathVariable Long userId) {
-        log.info("GET запрос на получение user с id: {}", userId);
+        log.info(">>>GET запрос на получение user с id: {}", userId);
         return userService.getUserById(userId);
     }
 
     @GetMapping
     public List<UserDto> getAllUsers() {
-        log.info("GET запрос на получение всех user");
+        log.info(">>>GET запрос на получение всех user");
         return userService.getUsers();
     }
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@PathVariable Long userId,
             @RequestBody UserDto userDto) {
-        log.info("PATCH запрос на изменение user с id: {}", userId);
+        log.info(">>>PATCH запрос на изменение user с id: {}", userId);
         return userService.updateUser(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable Long userId) {
-        log.info("DELETE запрос на удаление user с id: {}", userId);
+        log.info(">>>DELETE запрос на удаление user с id: {}", userId);
         userService.deleteUser(userId);
     }
 }

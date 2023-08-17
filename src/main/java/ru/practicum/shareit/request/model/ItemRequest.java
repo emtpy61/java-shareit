@@ -1,10 +1,16 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,5 +25,7 @@ public class ItemRequest {
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
     private User requester;
-    private LocalDateTime created = LocalDateTime.now();
+    private LocalDateTime created;
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Item> items = new ArrayList<>();
 }

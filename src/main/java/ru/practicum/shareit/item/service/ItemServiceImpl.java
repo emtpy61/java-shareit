@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.common.ecxeption.AccessDenyException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
+import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -17,6 +18,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -36,18 +39,25 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public ItemDto createItem(Long ownerId, ItemDto itemDto) {
-        getUser(ownerId);
-        itemDto.setOwnerId(ownerId);
-        itemDto.setId(
-                itemRepository.save(itemMapper.itemDtoToItem(itemDto))
-                        .getId());
-        return itemDto;
+    public ItemDto createItem(Long ownerId, CreateItemDto createItemDto) {
+        User user = getUser(ownerId);
+        Item item = itemMapper.createItemDtoToItem(createItemDto);
+        item.setOwner(user);
+        if (createItemDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(createItemDto.getRequestId())
+                    .orElseThrow(notFoundException("Запрос с id = {0} не найдена.", createItemDto.getRequestId()));
+            item.setRequest(itemRequest);
+        } else {
+            item.setRequest(null);
+        }
+        item = itemRepository.save(item);
+        return itemMapper.itemToItemDto(item, ownerId);
     }
 
     @Override
@@ -65,13 +75,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto updateItem(Long itemId, Long userId, ItemDto itemDto) {
+    public ItemDto updateItem(Long itemId, Long userId, CreateItemDto createItemDto) {
         Item item = getItem(itemId);
         if (!Objects.equals(item.getOwner().getId(), userId)) {
             String message = String.format("Вещь %s не принадлежит полюзователю %s", itemId, userId);
             throw new AccessDenyException(message);
         }
-        itemRepository.updateItemFields(itemMapper.itemDtoToItem(itemDto), userId, itemId);
+        itemRepository.updateItemFields(itemMapper.createItemDtoToItem(createItemDto), userId, itemId);
         return getItemById(itemId, userId);
     }
 

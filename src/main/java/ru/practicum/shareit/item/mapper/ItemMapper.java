@@ -5,10 +5,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -27,12 +27,13 @@ public interface ItemMapper {
     @Mapping(target = "ownerId", source = "item.owner.id")
     ItemDto itemToItemDto(Item item, @Context Long userId);
 
+
+    @Mapping(target = "request", ignore = true)
+    @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "bookings", ignore = true)
-    @Mapping(target = "request", source = "requestId")
-    @Mapping(target = "owner.id", source = "ownerId")
-    Item itemDtoToItem(ItemDto itemDto);
-
+    Item createItemDtoToItem(CreateItemDto createItemDto);
 
     List<ItemDto> itemsToItemDtos(List<Item> items, @Context Long userId);
 
@@ -43,23 +44,20 @@ public interface ItemMapper {
         if (!Objects.equals(item.getOwner().getId(), userId)) {
             return null;
         }
+        if (item.getBookings() == null) {
+            return null;
+        }
         return item.getBookings().stream()
                 .filter(booking -> booking.getStatus().equals(BookingStatus.APPROVED))
                 .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                 .max(Comparator.comparing(Booking::getStart)).orElse(null);
     }
 
-    default ItemRequest mapRequest(Long id) {
-        if (id == null) {
-            return null;
-        }
-        ItemRequest request = new ItemRequest();
-        request.setId(id);
-        return request;
-    }
-
     default Booking getNextBooking(Item item, Long userId) {
         if (!Objects.equals(item.getOwner().getId(), userId)) {
+            return null;
+        }
+        if (item.getBookings() == null) {
             return null;
         }
         return item.getBookings().stream()

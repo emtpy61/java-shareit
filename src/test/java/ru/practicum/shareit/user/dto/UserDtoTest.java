@@ -18,17 +18,17 @@ class UserDtoTest {
     void testSerialize() throws Exception {
         UserDto userDto = new UserDto(1L, "User", "email@email.com");
 
-        JsonContent<UserDto> UserDtoJsonContent = jacksonTester.write(userDto);
+        JsonContent<UserDto> userDtoJsonContent = jacksonTester.write(userDto);
 
-        assertThat(UserDtoJsonContent).hasJsonPath("$.id");
-        assertThat(UserDtoJsonContent).hasJsonPath("$.name");
-        assertThat(UserDtoJsonContent).hasJsonPath("$.email");
+        assertThat(userDtoJsonContent).hasJsonPath("$.id");
+        assertThat(userDtoJsonContent).hasJsonPath("$.name");
+        assertThat(userDtoJsonContent).hasJsonPath("$.email");
 
-        assertThat(UserDtoJsonContent).extractingJsonPathNumberValue("$.id")
+        assertThat(userDtoJsonContent).extractingJsonPathNumberValue("$.id")
                 .isEqualTo(1);
-        assertThat(UserDtoJsonContent).extractingJsonPathNumberValue("$.id")
+        assertThat(userDtoJsonContent).extractingJsonPathNumberValue("$.id")
                 .isEqualTo(1);
-        assertThat(UserDtoJsonContent).extractingJsonPathNumberValue("$.id")
+        assertThat(userDtoJsonContent).extractingJsonPathNumberValue("$.id")
                 .isEqualTo(1);
     }
 }

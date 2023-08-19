@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -18,26 +19,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DataJpaTest
 class ItemRepositoryTest {
     @Autowired
-    private UserRepository userRepository;
+    private TestEntityManager entityManager;
     @Autowired
     private ItemRepository itemRepository;
 
-    @BeforeEach
-    void init() {
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-    }
-
     @Test
     void findAllByOwnerId() {
-        User user = new User(1L, "User", "email@email.com");
-        user = userRepository.save(user);
-        Item item = new Item(1L, "Example item", "Example item", true, user, null,
+        User user = new User(null, "User", "email@email.com");
+        entityManager.persist(user);
+        Item item = new Item(null, "Example item", "Example item", true, user, null,
                 null, new ArrayList<>());
-        Item item2 = new Item(2L, "Example item2", "Example item2", true, user, null,
+        Item item2 = new Item(null, "Example item2", "Example item2", true, user, null,
                 null, new ArrayList<>());
-        itemRepository.save(item);
-        itemRepository.save(item2);
+        entityManager.persist(item);
+        entityManager.persist(item2);
 
         List<Item> items = itemRepository.findAllByOwnerId(user.getId());
 
@@ -52,15 +47,15 @@ class ItemRepositoryTest {
 
     @Test
     void searchItemByNameOrDescription() {
-        User user = new User(1L, "User", "email@email.com");
-        user = userRepository.save(user);
-        Item item = new Item(1L, "Example item", "Example item", true, user, null,
+        User user = new User(null, "User", "email@email.com");
+        entityManager.persist(user);
+        Item item = new Item(null, "Example item", "Example item", true, user, null,
                 null, new ArrayList<>());
-        Item item2 = new Item(2L, "Example item2", "Example item2", true, user, null,
+        Item item2 = new Item(null, "Example item2", "Example item2", true, user, null,
                 null, new ArrayList<>());
 
-        itemRepository.save(item);
-        itemRepository.save(item2);
+        entityManager.persist(item);
+        entityManager.persist(item2);
 
         List<Item> items = itemRepository.searchItemByNameOrDescription("item");
 
@@ -76,19 +71,18 @@ class ItemRepositoryTest {
     @Test
     void updateItemFields() {
 
-        User user = new User(1L, "User", "email@email.com");
-        user = userRepository.save(user);
+        User user = new User(null, "User", "email@email.com");
+        entityManager.persist(user);
         ItemRequest itemRequest = new ItemRequest(1L, "Description", user, LocalDateTime.now(), null);
-        Item item = new Item(1L, "Example item", "Example item", true, user, null,
+        Item item = new Item(null, "Example item", "Example item", true, user, null,
                 null, new ArrayList<>());
-        Item itemUpdateName = new Item(1L, "Update item", "Example item", true, user, null,
+        entityManager.persist(item);
+        Item itemUpdateName = new Item(item.getId(), "Update item", "Example item", true, user, null,
                 null, new ArrayList<>());
-        Item itemUpdateDescription = new Item(1L, "Example item", "Update item", true, user, null,
+        Item itemUpdateDescription = new Item(item.getId(), "Example item", "Update item", true, user, null,
                 null, new ArrayList<>());
-        Item itemUpdateAvailable = new Item(1L, "Example item", "Example item", false, user, null,
+        Item itemUpdateAvailable = new Item(item.getId(), "Example item", "Example item", false, user, null,
                 null, new ArrayList<>());
-
-        item = itemRepository.save(item);
 
         itemRepository.updateItemFields(itemUpdateName, user.getId(), item.getId());
         Item retrievedItem = itemRepository.findById(item.getId()).get();

@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
@@ -22,21 +23,16 @@ public class BookingRepositoryTest {
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ItemRepository itemRepository;
-    @Autowired
-    private ItemRequestRepository itemRequestRepository;
+    private TestEntityManager entityManager;
 
     @Test
     public void testHasCompletedBookingsForItem() {
-        User booker = new User(1L, "User", "email@email.com");
-        ItemRequest itemRequest = new ItemRequest(1L, "Description", booker, LocalDateTime.now(), null);
-        Item item = new Item(1L, "Example item", "Example item", true, booker, itemRequest,
+        User booker = new User(null, "User", "email@email.com");
+        entityManager.persist(booker);
+        Item item = new Item(null, "Example item", "Example item", true, booker, null,
                 null, null);
+        entityManager.persist(item);
 
-        userRepository.save(booker);
-        itemRepository.save(item);
 
         Booking booking = new Booking();
         booking.setBooker(booker);
@@ -44,8 +40,7 @@ public class BookingRepositoryTest {
         booking.setStatus(BookingStatus.APPROVED);
         booking.setStart(LocalDateTime.now().minusHours(2));
         booking.setEnd(LocalDateTime.now().minusHours(1));
-
-        bookingRepository.save(booking);
+        entityManager.persist(booking);
 
         boolean result = bookingRepository.hasCompletedBookingsForItem(
                 booker, item, BookingStatus.APPROVED, LocalDateTime.now());

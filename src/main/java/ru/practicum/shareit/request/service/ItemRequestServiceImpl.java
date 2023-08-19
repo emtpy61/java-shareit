@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.CreateItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -66,10 +65,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestMapper.itemRequestToItemRequestDto(itemRequest);
     }
 
-    private Item getItem(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(notFoundException("Вещь с id = {0} не найдена.", itemId));
-    }
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)

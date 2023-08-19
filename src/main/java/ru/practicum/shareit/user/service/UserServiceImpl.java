@@ -31,8 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(notFoundException("Пользователь с id = {0} не найден.", userId));
+        User user = getUser(userId);
         return userMapper.userToUserDto(user);
     }
 
@@ -45,14 +44,25 @@ public class UserServiceImpl implements UserService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        userRepository.updateUserFields(userMapper.userDtotoUser(userDto), userId);
-        return userMapper.userToUserDto(userRepository.findById(userId)
-                .orElseThrow(notFoundException("Пользователь с id = {0} не найден.", userId)));
+        User user = getUser(userId);
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
+        }
+        user = userRepository.save(user);
+        return userMapper.userToUserDto(user);
     }
 
     @Transactional
     @Override
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(notFoundException("Пользователь с id = {0} не найден.", userId));
     }
 }

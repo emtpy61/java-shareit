@@ -24,6 +24,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -48,6 +49,7 @@ class ItemServiceTest {
     private static Item item;
     private static Comment comment;
     private static Item itemUpdated;
+    private static ItemRequest itemRequest;
     private static CreateCommentDto createCommentDto;
     private static CreateItemDto updatedItemDto;
     private static CreateItemDto createItemDto;
@@ -74,7 +76,8 @@ class ItemServiceTest {
         ReflectionTestUtils.setField(itemService, "commentMapper", commentMapper);
 
         user = new User(1L, "User", "email@email.com");
-        item = new Item(1L, "Example item", "Example item", true, user, null,
+        itemRequest = new ItemRequest(1L, "Description", user, LocalDateTime.now(), null);
+        item = new Item(1L, "Example item", "Example item", true, user, itemRequest,
                 null, new ArrayList<>());
         itemUpdated = new Item(1L, "Updated Item", "Updated Description", true, user, null,
                 null, new ArrayList<>());
@@ -97,6 +100,19 @@ class ItemServiceTest {
 
         assertThat(createdItem.getName()).isEqualTo(createItemDto.getName());
         assertThat(createdItem.getDescription()).isEqualTo(createItemDto.getDescription());
+    }
+
+    @Test
+    void testCreateItemForRequest() {
+        createItemDto.setRequestId(1L);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
+        ItemDto createdItem = itemService.createItem(user.getId(), createItemDto);
+
+        assertThat(createdItem.getName()).isEqualTo(createItemDto.getName());
+        assertThat(createdItem.getDescription()).isEqualTo(createItemDto.getDescription());
+        assertThat(createdItem.getRequestId()).isEqualTo(itemRequest.getId());
     }
 
     @Test
@@ -130,6 +146,23 @@ class ItemServiceTest {
 
         assertThat(updatedItem.getName()).isEqualTo(updatedItemDto.getName());
         assertThat(updatedItem.getDescription()).isEqualTo(updatedItemDto.getDescription());
+    }
+
+    @Test
+    void testSearchItems() {
+        when(itemRepository.searchItemByNameOrDescription(anyString())).thenReturn(List.of(item));
+
+        List<ItemDto> retrievedItems = itemService.searchItems("text");
+
+        assertThat(retrievedItems.size()).isEqualTo(1);
+        assertThat(retrievedItems.get(0).getName()).isEqualTo(item.getName());
+    }
+
+    @Test
+    void testSearchItemsTextIsBlank() {
+
+        List<ItemDto> retrievedItems = itemService.searchItems("");
+        assertThat(retrievedItems.size()).isEqualTo(0);
     }
 
 

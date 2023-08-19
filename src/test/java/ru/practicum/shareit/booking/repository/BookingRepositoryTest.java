@@ -7,11 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 
@@ -32,7 +28,6 @@ public class BookingRepositoryTest {
         Item item = new Item(null, "Example item", "Example item", true, booker, null,
                 null, null);
         entityManager.persist(item);
-
 
         Booking booking = new Booking();
         booking.setBooker(booker);

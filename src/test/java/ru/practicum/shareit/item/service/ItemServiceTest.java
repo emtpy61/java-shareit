@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.common.ecxeption.AccessDenyException;
 import ru.practicum.shareit.common.ecxeption.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -37,7 +38,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -103,6 +104,13 @@ class ItemServiceTest {
     }
 
     @Test
+    void testCreateItemWithInvalidUser() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> itemService.createItem(user.getId(), createItemDto))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
     void testCreateItemForRequest() {
         createItemDto.setRequestId(1L);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
@@ -139,13 +147,20 @@ class ItemServiceTest {
 
     @Test
     void testUpdateItem() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemRepository.findById(eq(item.getId()))).thenReturn(Optional.of(itemUpdated));
 
         ItemDto updatedItem = itemService.updateItem(item.getId(), user.getId(), updatedItemDto);
 
         assertThat(updatedItem.getName()).isEqualTo(updatedItemDto.getName());
         assertThat(updatedItem.getDescription()).isEqualTo(updatedItemDto.getDescription());
+    }
+
+    @Test
+    void testUpdateItemWithNonOwnerUser() {
+        when(itemRepository.findById(eq(item.getId()))).thenReturn(Optional.of(itemUpdated));
+
+        assertThatThrownBy(() -> itemService.updateItem(item.getId(), 123L, updatedItemDto))
+                .isInstanceOf(AccessDenyException.class);
     }
 
     @Test
@@ -195,5 +210,11 @@ class ItemServiceTest {
 
         assertThatThrownBy(() -> itemService.addComment(createCommentDto, user.getId(), item.getId()))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void testDeleteItem() {
+        itemService.deleteItem(1L);
+        verify(itemRepository,times(1)).deleteById(anyLong());
     }
 }

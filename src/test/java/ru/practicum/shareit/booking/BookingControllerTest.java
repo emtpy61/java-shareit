@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookingController.class)
 public class BookingControllerTest {
     private static BookingRequestDto requestDto;
+    private static BookingRequestDto requestDtoInPast;
     private static UserDto booker;
     private static BookingItemDto item;
     private static BookingDto responseDto;
@@ -47,6 +49,10 @@ public class BookingControllerTest {
                 1L,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(2));
+        requestDtoInPast = new BookingRequestDto(
+                1L,
+                LocalDateTime.now().minusDays(1),
+                LocalDateTime.now().minusDays(2));
         booker = new UserDto(1L, "name", "email@email.com");
         item = new BookingItemDto(1L, "Отвертка");
         responseDto = new BookingDto(
@@ -56,6 +62,23 @@ public class BookingControllerTest {
                 "WAITING", booker, item);
         responseDtoList = new ArrayList<>();
         responseDtoList.add(responseDto);
+    }
+
+    @Test
+    void testCreateBookingWithWrongDate() throws Exception {
+        Mockito.when(this.bookingService.createBooking(any(BookingRequestDto.class), anyLong()))
+                .thenReturn(responseDto);
+
+        mvc.perform(
+                        post("/bookings")
+                                .content(objectMapper.writeValueAsString(requestDtoInPast))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult -> mvcResult.getResolvedException().getClass()
+                        .equals(MethodArgumentNotValidException.class));
+
     }
 
     @Test
@@ -71,6 +94,7 @@ public class BookingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
+        verify(bookingService,times(1)).createBooking(any(),anyLong());
     }
 
     @Test

@@ -11,6 +11,7 @@ import ru.practicum.shareit.common.ecxeption.ErrorMessage;
 import ru.practicum.shareit.common.ecxeption.ItemNotAvailbaleException;
 import ru.practicum.shareit.common.ecxeption.NotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Objects;
 
 @RestControllerAdvice
@@ -55,6 +56,13 @@ public class ErrorHandler {
         log.error(message);
 
         return new ErrorMessage(message);
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleConstraintViolationException(final Exception e) {
+        log.error(e.getMessage());
+        return new ErrorMessage(e.getMessage());
     }
 
     @ExceptionHandler({Exception.class})

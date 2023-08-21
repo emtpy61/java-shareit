@@ -77,7 +77,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDto)));
-        verify(itemService,times(1)).createItem(anyLong(),any());
+        verify(itemService, times(1)).createItem(anyLong(), any());
     }
 
     @Test
@@ -105,7 +105,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDto)));
-        verify(itemService,times(1)).getItemById(anyLong(),anyLong());
+        verify(itemService, times(1)).getItemById(anyLong(), anyLong());
     }
 
     @Test
@@ -118,7 +118,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDtoList)));
-        verify(itemService,times(1)).getItems(anyLong());
+        verify(itemService, times(1)).getItems(anyLong());
     }
 
     @Test
@@ -133,7 +133,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDto)));
-        verify(itemService,times(1)).updateItem(anyLong(),anyLong(), any());
+        verify(itemService, times(1)).updateItem(anyLong(), anyLong(), any());
     }
 
     @Test
@@ -146,7 +146,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDtoList)));
-        verify(itemService,times(1)).searchItems(anyString());
+        verify(itemService, times(1)).searchItems(anyString());
     }
 
     @Test
@@ -172,7 +172,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(commentDto)));
-        verify(itemService, times(1)).addComment(any(),anyLong(),anyLong());
+        verify(itemService, times(1)).addComment(any(), anyLong(), anyLong());
     }
 
     @Test

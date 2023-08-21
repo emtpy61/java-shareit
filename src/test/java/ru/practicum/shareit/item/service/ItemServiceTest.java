@@ -215,6 +215,6 @@ class ItemServiceTest {
     @Test
     void testDeleteItem() {
         itemService.deleteItem(1L);
-        verify(itemRepository,times(1)).deleteById(anyLong());
+        verify(itemRepository, times(1)).deleteById(anyLong());
     }
 }

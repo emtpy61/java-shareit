@@ -78,7 +78,7 @@ public class BookingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
-        verify(bookingService,times(1)).createBooking(any(),anyLong());
+        verify(bookingService, times(1)).createBooking(any(), anyLong());
     }
 
     @Test
@@ -95,7 +95,6 @@ public class BookingControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(mvcResult -> mvcResult.getResolvedException().getClass()
                         .equals(MethodArgumentNotValidException.class));
-
     }
 
     @Test

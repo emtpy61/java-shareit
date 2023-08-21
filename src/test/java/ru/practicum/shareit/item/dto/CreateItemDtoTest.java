@@ -16,7 +16,7 @@ class CreateItemDtoTest {
 
     @Test
     void testSerialize() throws Exception {
-        CreateItemDto createItemDto = new CreateItemDto("Name","Description",true,1L);
+        CreateItemDto createItemDto = new CreateItemDto("Name", "Description", true, 1L);
 
         JsonContent<CreateItemDto> createItemDtoJsonContent = jacksonTester.write(createItemDto);
 
@@ -34,5 +34,4 @@ class CreateItemDtoTest {
         assertThat(createItemDtoJsonContent).extractingJsonPathNumberValue("$.requestId")
                 .isEqualTo(1);
     }
-
 }

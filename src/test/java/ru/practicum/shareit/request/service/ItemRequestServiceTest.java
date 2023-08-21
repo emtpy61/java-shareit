@@ -78,6 +78,7 @@ class ItemRequestServiceTest {
                 itemRequest.getId());
         assertThat(retrievedItemRequest).isEqualTo(createdItemRequest);
     }
+
     @Test
     public void testCreateRequestInvalidUser() {
         when(userRepository.findById(eq(1L))).thenReturn(Optional.empty());

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.request.dto.CreateItemRequestDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,7 +15,7 @@ class CreateCommentDtoTest {
 
     @Test
     void testSerialize() throws Exception {
-        CreateCommentDto createCommentDto = new CreateCommentDto("Comment","Author");
+        CreateCommentDto createCommentDto = new CreateCommentDto("Comment", "Author");
 
         JsonContent<CreateCommentDto> createCommentDtoJsonContent = jacksonTester.write(createCommentDto);
 
@@ -28,5 +27,4 @@ class CreateCommentDtoTest {
         assertThat(createCommentDtoJsonContent).extractingJsonPathStringValue("$.authorName")
                 .isEqualTo("Author");
     }
-
 }

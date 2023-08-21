@@ -37,7 +37,7 @@ public class BookingControllerTest {
     private static List<BookingDto> responseDtoList;
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
     @MockBean
     private BookingService bookingService;
 

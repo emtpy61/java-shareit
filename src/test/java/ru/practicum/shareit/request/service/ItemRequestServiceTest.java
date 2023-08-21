@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.common.ecxeption.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.CreateItemRequestDto;
@@ -29,8 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -68,15 +69,20 @@ class ItemRequestServiceTest {
     }
 
     @Test
-    public void testCreateAndGetBooking() {
+    public void testCreateAndGetRequest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(itemRequestRepository.save(any(ItemRequest.class))).thenReturn(itemRequest);
         when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
         ItemRequestDto createdItemRequest = itemRequestService.createItemRequest(createItemRequestDto, user.getId());
         ItemRequestDto retrievedItemRequest = itemRequestService.getItemRequestById(createdItemRequest.getId(),
                 itemRequest.getId());
         assertThat(retrievedItemRequest).isEqualTo(createdItemRequest);
+    }
+    @Test
+    public void testCreateRequestInvalidUser() {
+        when(userRepository.findById(eq(1L))).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> itemRequestService.createItemRequest(createItemRequestDto, user.getId()))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test

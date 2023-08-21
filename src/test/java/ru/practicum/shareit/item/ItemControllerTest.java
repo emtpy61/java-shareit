@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
@@ -23,6 +24,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,10 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ItemControllerTest {
 
     private static CreateItemDto createItemDto;
+    private static CreateItemDto invalidCreateItemDto;
     private static ItemDto itemDto;
     private static CommentDto commentDto;
     private static List<ItemDto> itemDtoList;
     private static CreateCommentDto createCommentDto;
+    private static CreateCommentDto invalidCreateCommentDto;
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     @Autowired
     private MockMvc mockMvc;
@@ -43,6 +47,7 @@ class ItemControllerTest {
     @BeforeEach
     public void setUp() {
         createItemDto = new CreateItemDto("Дрель", "Простая дрель", true, null);
+        invalidCreateItemDto = new CreateItemDto(" ", null, null, null);
         commentDto = new CommentDto(1L, "comment", "user", "2023-08-19T13:53:07.617615700");
         itemDto = new ItemDto(
                 1L,
@@ -57,6 +62,7 @@ class ItemControllerTest {
         itemDtoList = new ArrayList<>();
         itemDtoList.add(itemDto);
         createCommentDto = new CreateCommentDto("comment", "user");
+        invalidCreateCommentDto = new CreateCommentDto(" ", "user");
     }
 
     @Test
@@ -68,8 +74,25 @@ class ItemControllerTest {
                                 .content(objectMapper.writeValueAsString(createItemDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDto)));
+        verify(itemService,times(1)).createItem(anyLong(),any());
+    }
+
+    @Test
+    void testCreateItemInvalidData() throws Exception {
+        Mockito.when(this.itemService.createItem(anyLong(), any(CreateItemDto.class))).thenReturn(itemDto);
+
+        mockMvc.perform(
+                        post("/items")
+                                .content(objectMapper.writeValueAsString(invalidCreateItemDto))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult -> mvcResult.getResolvedException().getClass()
+                        .equals(MethodArgumentNotValidException.class));
     }
 
     @Test
@@ -79,8 +102,10 @@ class ItemControllerTest {
         mockMvc.perform(
                         get("/items/{itemId}", 1L)
                                 .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDto)));
+        verify(itemService,times(1)).getItemById(anyLong(),anyLong());
     }
 
     @Test
@@ -90,8 +115,10 @@ class ItemControllerTest {
         mockMvc.perform(
                         get("/items")
                                 .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDtoList)));
+        verify(itemService,times(1)).getItems(anyLong());
     }
 
     @Test
@@ -103,8 +130,10 @@ class ItemControllerTest {
                                 .content(objectMapper.writeValueAsString(createItemDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDto)));
+        verify(itemService,times(1)).updateItem(anyLong(),anyLong(), any());
     }
 
     @Test
@@ -114,14 +143,17 @@ class ItemControllerTest {
         mockMvc.perform(
                         get("/items/search")
                                 .param("text", "searchText"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDtoList)));
+        verify(itemService,times(1)).searchItems(anyString());
     }
 
     @Test
     void testDeleteItem() throws Exception {
         mockMvc.perform(
                         delete("/items/{itemId}", 1L))
+                .andDo(print())
                 .andExpect(status().isOk());
 
         verify(itemService, times(1)).deleteItem(anyLong());
@@ -137,7 +169,25 @@ class ItemControllerTest {
                                 .content(objectMapper.writeValueAsString(createCommentDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(commentDto)));
+        verify(itemService, times(1)).addComment(any(),anyLong(),anyLong());
+    }
+
+    @Test
+    void testCreateCommentToItemInvalidData() throws Exception {
+        Mockito.when(this.itemService.addComment(any(CreateCommentDto.class), anyLong(), anyLong()))
+                .thenReturn(commentDto);
+
+        mockMvc.perform(
+                        post("/items/{itemId}/comment", 1L)
+                                .content(objectMapper.writeValueAsString(invalidCreateCommentDto))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("X-Sharer-User-Id", 123L))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult -> mvcResult.getResolvedException().getClass()
+                        .equals(MethodArgumentNotValidException.class));
     }
 }

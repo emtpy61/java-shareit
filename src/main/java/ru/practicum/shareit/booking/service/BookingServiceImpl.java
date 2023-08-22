@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -92,41 +94,41 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsByBooker(String state, Long userId) {
+    public List<BookingDto> getBookingsByBooker(String state, Long userId, int from, int size) {
         getUser(userId);
         QBooking booking = QBooking.booking;
-        Sort sort = Sort.by("start").descending();
+        Pageable page = PageRequest.of(from / size, size, Sort.by("start").descending());
         Iterable<Booking> bookings;
 
         switch (state) {
             case "ALL":
-                bookings = bookingRepository.findAll(booking.booker.id.eq(userId), sort);
+                bookings = bookingRepository.findAll(booking.booker.id.eq(userId), page);
                 break;
             case "CURRENT":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
                                 .and(booking.start.before(LocalDateTime.now()))
-                                .and(booking.end.after(LocalDateTime.now())), sort);
+                                .and(booking.end.after(LocalDateTime.now())), page);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.end.before(LocalDateTime.now())), sort);
+                                .and(booking.end.before(LocalDateTime.now())), page);
                 break;
             case "FUTURE":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.start.after(LocalDateTime.now())), sort);
+                                .and(booking.start.after(LocalDateTime.now())), page);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.WAITING)), sort);
+                                .and(booking.status.eq(BookingStatus.WAITING)), page);
                 break;
             case "REJECTED":
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.REJECTED)), sort);
+                                .and(booking.status.eq(BookingStatus.REJECTED)), page);
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);
@@ -135,41 +137,41 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsByOwner(String state, Long userId) {
+    public List<BookingDto> getBookingsByOwner(String state, Long userId, int from, int size) {
         getUser(userId);
         QBooking booking = QBooking.booking;
-        Sort sort = Sort.by("start").descending();
+        Pageable page = PageRequest.of(from / size, size, Sort.by("start").descending());
         Iterable<Booking> bookings;
 
         switch (state) {
             case "ALL":
-                bookings = bookingRepository.findAll(booking.item.owner.id.eq(userId), sort);
+                bookings = bookingRepository.findAll(booking.item.owner.id.eq(userId), page);
                 break;
             case "CURRENT":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
                                 .and(booking.start.before(LocalDateTime.now()))
-                                .and(booking.end.after(LocalDateTime.now())), sort);
+                                .and(booking.end.after(LocalDateTime.now())), page);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.end.before(LocalDateTime.now())), sort);
+                                .and(booking.end.before(LocalDateTime.now())), page);
                 break;
             case "FUTURE":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.start.after(LocalDateTime.now())), sort);
+                                .and(booking.start.after(LocalDateTime.now())), page);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.WAITING)), sort);
+                                .and(booking.status.eq(BookingStatus.WAITING)), page);
                 break;
             case "REJECTED":
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
-                                .and(booking.status.eq(BookingStatus.REJECTED)), sort);
+                                .and(booking.status.eq(BookingStatus.REJECTED)), page);
                 break;
             default:
                 throw new UnsupportedStateException("Unknown state: " + state);

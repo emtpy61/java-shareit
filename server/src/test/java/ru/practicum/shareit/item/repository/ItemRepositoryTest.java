@@ -32,7 +32,7 @@ class ItemRepositoryTest {
         entityManager.persist(item);
         entityManager.persist(item2);
 
-        List<Item> items = itemRepository.findAllByOwnerId(user.getId());
+        List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(user.getId());
 
         assertEquals(2, items.size());
 

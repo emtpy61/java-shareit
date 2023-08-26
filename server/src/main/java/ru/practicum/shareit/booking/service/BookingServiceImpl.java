@@ -98,6 +98,7 @@ public class BookingServiceImpl implements BookingService {
         getUser(userId);
         QBooking booking = QBooking.booking;
         Pageable page = PageRequest.of(from / size, size, Sort.by("start").descending());
+        Pageable curpage = PageRequest.of(from / size, size, Sort.by("start").ascending());
         Iterable<Booking> bookings;
 
         switch (state) {
@@ -108,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAll(
                         booking.booker.id.eq(userId)
                                 .and(booking.start.before(LocalDateTime.now()))
-                                .and(booking.end.after(LocalDateTime.now())), page);
+                                .and(booking.end.after(LocalDateTime.now())), curpage);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAll(
@@ -141,6 +142,7 @@ public class BookingServiceImpl implements BookingService {
         getUser(userId);
         QBooking booking = QBooking.booking;
         Pageable page = PageRequest.of(from / size, size, Sort.by("start").descending());
+        Pageable curpage = PageRequest.of(from / size, size, Sort.by("start").ascending());
         Iterable<Booking> bookings;
 
         switch (state) {
@@ -151,7 +153,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAll(
                         booking.item.owner.id.eq(userId)
                                 .and(booking.start.before(LocalDateTime.now()))
-                                .and(booking.end.after(LocalDateTime.now())), page);
+                                .and(booking.end.after(LocalDateTime.now())), curpage);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAll(

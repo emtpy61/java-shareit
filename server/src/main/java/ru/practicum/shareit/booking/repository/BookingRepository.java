@@ -17,8 +17,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Queryds
             "WHERE b.item = :item " +
             "AND b.status = :status " +
             "AND b.end <= :currentDateTime " +
-            "AND b.booker = :booker " +
-            "AND b.start <= :currentDateTime")
+            "AND b.booker = :booker ")
     boolean hasCompletedBookingsForItem(
             User booker,
             Item item,

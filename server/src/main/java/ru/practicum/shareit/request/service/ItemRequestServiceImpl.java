@@ -32,6 +32,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
     private final ItemRequestMapper itemRequestMapper;
 
+    @Transactional
     @Override
     public ItemRequestDto createItemRequest(CreateItemRequestDto createItemRequestDto, Long userId) {
         User user = getUser(userId);

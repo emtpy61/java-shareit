@@ -100,6 +100,7 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteById(itemId);
     }
 
+    @Transactional
     @Override
     public CommentDto addComment(CreateCommentDto createCommentDto, Long userId, Long itemId) {
         User user = getUser(userId);

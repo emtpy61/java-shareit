@@ -19,12 +19,6 @@ services:
       - "9090:9090"
     depends_on:
       - db
-    environment:
-      - DB_NAME=shareit
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - DB_HOST=db
-      - DB_PORT=5432
 
 
   db:

@@ -137,7 +137,7 @@ class ItemServiceTest {
     void testGetItems() {
         List<Item> items = new ArrayList<>();
         items.add(item);
-        when(itemRepository.findAllByOwnerId(eq(user.getId()))).thenReturn(items);
+        when(itemRepository.findAllByOwnerIdOrderByIdAsc(eq(user.getId()))).thenReturn(items);
 
         List<ItemDto> retrievedItems = itemService.getItems(user.getId());
 

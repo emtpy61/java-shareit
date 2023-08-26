@@ -8,7 +8,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    List<Item> findAllByOwnerId(long ownerId);
+    List<Item> findAllByOwnerIdOrderByIdAsc(long ownerId);
 
     @Query("SELECT i FROM Item i "
             + "WHERE (LOWER(i.name) LIKE LOWER(CONCAT('%', :text, '%')) "

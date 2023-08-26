@@ -69,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItems(Long userId) {
-        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
         return itemMapper.itemsToItemDtos(items, userId);
     }
 
@@ -115,8 +115,9 @@ public class ItemServiceImpl implements ItemService {
         Comment comment = commentMapper.createCommentDtotoComment(createCommentDto);
         comment.setAuthor(user);
         comment.setCreated(LocalDateTime.now());
+        comment = commentRepository.save(comment);
         item.addComment(comment);
-        return commentMapper.commentToCommentDto(commentRepository.save(comment));
+        return commentMapper.commentToCommentDto(comment);
     }
 
     private Item getItem(Long itemId) {

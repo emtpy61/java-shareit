@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
@@ -78,21 +77,6 @@ class ItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemDto)));
         verify(itemService, times(1)).createItem(anyLong(), any());
-    }
-
-    @Test
-    void testCreateItemInvalidData() throws Exception {
-        Mockito.when(this.itemService.createItem(anyLong(), any(CreateItemDto.class))).thenReturn(itemDto);
-
-        mockMvc.perform(
-                        post("/items")
-                                .content(objectMapper.writeValueAsString(invalidCreateItemDto))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header("X-Sharer-User-Id", 123L))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(mvcResult -> mvcResult.getResolvedException().getClass()
-                        .equals(MethodArgumentNotValidException.class));
     }
 
     @Test
@@ -175,19 +159,4 @@ class ItemControllerTest {
         verify(itemService, times(1)).addComment(any(), anyLong(), anyLong());
     }
 
-    @Test
-    void testCreateCommentToItemInvalidData() throws Exception {
-        Mockito.when(this.itemService.addComment(any(CreateCommentDto.class), anyLong(), anyLong()))
-                .thenReturn(commentDto);
-
-        mockMvc.perform(
-                        post("/items/{itemId}/comment", 1L)
-                                .content(objectMapper.writeValueAsString(invalidCreateCommentDto))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header("X-Sharer-User-Id", 123L))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(mvcResult -> mvcResult.getResolvedException().getClass()
-                        .equals(MethodArgumentNotValidException.class));
-    }
 }

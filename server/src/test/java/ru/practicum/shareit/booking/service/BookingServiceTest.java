@@ -21,7 +21,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.common.ecxeption.ItemNotAvailbaleException;
 import ru.practicum.shareit.common.ecxeption.NotFoundException;
-import ru.practicum.shareit.common.ecxeption.UnsupportedStateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -298,14 +297,5 @@ class BookingServiceTest {
         List<BookingDto> bookings = bookingService.getBookingsByOwner("REJECTED", 1L, 0, 10);
 
         assertThat(bookings.size()).isEqualTo(1);
-    }
-
-    @Test
-    public void testUnsupportedStateException() {
-        when(userRepository.findById(eq(1L))).thenReturn(Optional.of(user));
-        assertThatThrownBy(() -> bookingService.getBookingsByBooker("UNKNOWN_STATE", 1L, 0, 10))
-                .isInstanceOf(UnsupportedStateException.class);
-        assertThatThrownBy(() -> bookingService.getBookingsByOwner("UNKNOWN_STATE", 1L, 0, 10))
-                .isInstanceOf(UnsupportedStateException.class);
     }
 }

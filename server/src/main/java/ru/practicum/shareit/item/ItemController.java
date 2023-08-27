@@ -10,8 +10,6 @@ import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -25,7 +23,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-            @NotNull @RequestBody @Valid CreateItemDto createItemDto) {
+            @RequestBody CreateItemDto createItemDto) {
         log.info(">>>POST запрос на создание item: {}", createItemDto);
         return itemService.createItem(userId, createItemDto);
     }
@@ -67,7 +65,7 @@ public class ItemController {
     public CommentDto createCommentToItem(
             @PathVariable Long itemId,
             @RequestHeader("X-Sharer-User-Id") Long bookerId,
-            @RequestBody @Valid CreateCommentDto createCommentDto) {
+            @RequestBody CreateCommentDto createCommentDto) {
         log.info(">>>POST запрос на добаление комментария к item с id: {}", itemId);
         return itemService.addComment(createCommentDto, bookerId, itemId);
     }

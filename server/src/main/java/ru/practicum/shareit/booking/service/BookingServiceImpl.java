@@ -17,7 +17,6 @@ import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.common.ecxeption.ItemNotAvailbaleException;
 import ru.practicum.shareit.common.ecxeption.NotFoundException;
-import ru.practicum.shareit.common.ecxeption.UnsupportedStateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -99,7 +98,7 @@ public class BookingServiceImpl implements BookingService {
         QBooking booking = QBooking.booking;
         Pageable page = PageRequest.of(from / size, size, Sort.by("start").descending());
         Pageable curpage = PageRequest.of(from / size, size, Sort.by("start").ascending());
-        Iterable<Booking> bookings;
+        Iterable<Booking> bookings = null;
 
         switch (state) {
             case "ALL":
@@ -131,8 +130,6 @@ public class BookingServiceImpl implements BookingService {
                         booking.booker.id.eq(userId)
                                 .and(booking.status.eq(BookingStatus.REJECTED)), page);
                 break;
-            default:
-                throw new UnsupportedStateException("Unknown state: " + state);
         }
         return bookingMapper.bookingsToBookingDtos(bookings);
     }
@@ -143,7 +140,7 @@ public class BookingServiceImpl implements BookingService {
         QBooking booking = QBooking.booking;
         Pageable page = PageRequest.of(from / size, size, Sort.by("start").descending());
         Pageable curpage = PageRequest.of(from / size, size, Sort.by("start").ascending());
-        Iterable<Booking> bookings;
+        Iterable<Booking> bookings = null;
 
         switch (state) {
             case "ALL":
@@ -175,8 +172,6 @@ public class BookingServiceImpl implements BookingService {
                         booking.item.owner.id.eq(userId)
                                 .and(booking.status.eq(BookingStatus.REJECTED)), page);
                 break;
-            default:
-                throw new UnsupportedStateException("Unknown state: " + state);
         }
         return bookingMapper.bookingsToBookingDtos(bookings);
     }
